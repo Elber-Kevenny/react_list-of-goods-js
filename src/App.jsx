@@ -29,16 +29,20 @@ export const App = () => {
   const [sortGood, setSortGood] = useState(goodsFromServer);
   const [isSortedType, setIsSortedType] = useState('');
   const [isReversed, setIsReversed] = useState(false);
-  const [isReseted, setIsReseted] = useState('');
+
+  const isOriginalOrder = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+
+    return arr1.every((item, index) => item === arr2[index]);
+  };
+
   const toggleReverse = () => {
     setIsReversed(prev => !prev);
     setSortGood([...sortGood].reverse());
-    setIsReseted('reseted');
-    setIsSortedType('reverse');
   };
 
   const sortAlphabetically = () => {
-    const sorted = [...sortGood].sort((a, b) => a.localeCompare(b));
+    const sorted = [...goodsFromServer].sort((a, b) => a.localeCompare(b));
 
     if (isReversed) {
       sorted.reverse();
@@ -46,11 +50,10 @@ export const App = () => {
 
     setSortGood(sorted);
     setIsSortedType('alphabetically');
-    setIsReseted('reseted');
   };
 
   const sortByLength = () => {
-    const sorted = [...sortGood].sort((a, b) => b.length - a.length);
+    const sorted = [...goodsFromServer].sort((a, b) => b.length - a.length);
 
     if (isReversed) {
       sorted.reverse();
@@ -58,14 +61,12 @@ export const App = () => {
 
     setSortGood(sorted);
     setIsSortedType('Sort by length');
-    setIsReseted('reseted');
   };
 
   const reset = () => {
-    const resetList = [...goodsFromServer];
-
-    setSortGood(resetList);
+    setSortGood(goodsFromServer);
     setIsSortedType('reset');
+    setIsReversed(false);
   };
 
   return (
@@ -107,7 +108,7 @@ export const App = () => {
           Reverse
         </button>
 
-        {isReseted === 'reseted' && (
+        {!isOriginalOrder(sortGood, goodsFromServer) && (
           <button
             type="button"
             className={
